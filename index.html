@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WordList Lite</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <h1>📚 WordList Lite</h1>
+    <div class="header-actions">
+      <button id="viewToggleBtn" class="btn">🔀 Flashcards</button>
+      <button id="editModeBtn" class="btn">🔐 Edit</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="controls" class="controls">
+      <input id="searchInput" type="search" placeholder="Search word, meaning, or Hindi meaning..." autocomplete="off" />
+      <div id="alphabetFilter" class="alphabet-filter"></div>
+      <div id="resultCount" class="result-count"></div>
+    </section>
+
+    <section id="errorBanner" class="error-banner hidden"></section>
+
+    <section id="listView" class="view">
+      <div id="wordList" class="word-list"></div>
+    </section>
+
+    <section id="flashcardView" class="view hidden">
+      <div class="flashcard-controls">
+        <label for="difficultyFilter">Difficulty:</label>
+        <select id="difficultyFilter">
+          <option value="all">All</option>
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+        <span id="deckPosition"></span>
+      </div>
+      <div id="flashcard" class="flashcard">
+        <div class="flashcard-inner">
+          <div class="flashcard-front">
+            <div id="cardWord" class="card-word"></div>
+            <div class="flip-hint">Tap to flip</div>
+          </div>
+          <div class="flashcard-back">
+            <div id="cardDetails" class="card-details"></div>
+          </div>
+        </div>
+      </div>
+      <div class="deck-nav">
+        <button id="prevCardBtn" class="btn">← Prev</button>
+        <button id="nextCardBtn" class="btn">Next →</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Password gate modal -->
+  <div id="passwordModal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Enter Edit Mode</h2>
+      <p class="warning-text">
+        ⚠️ This is a simple client-side password gate, not real security.
+        It can be bypassed via browser devtools and has no password recovery.
+        Only use this to protect against accidental edits.
+      </p>
+      <input id="passwordInput" type="password" placeholder="Password" />
+      <div id="passwordError" class="error-text hidden">Incorrect password.</div>
+      <div class="modal-actions">
+        <button id="passwordCancelBtn" class="btn">Cancel</button>
+        <button id="passwordSubmitBtn" class="btn btn-primary">Unlock</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add / Edit word modal -->
+  <div id="wordFormModal" class="modal hidden">
+    <div class="modal-content wide">
+      <h2 id="wordFormTitle">Add Word</h2>
+      <form id="wordForm">
+        <input type="hidden" id="originalWord" />
+        <div class="form-grid">
+          <label>Word*<input id="fWord" type="text" required /></label>
+          <label>Part of Speech<input id="fPartOfSpeech" type="text" /></label>
+          <label class="span-2">Meaning*<input id="fMeaning" type="text" required /></label>
+          <label class="span-2">Example<input id="fExample" type="text" /></label>
+          <label>Synonyms (comma-separated)<input id="fSynonyms" type="text" /></label>
+          <label>Antonyms (comma-separated)<input id="fAntonyms" type="text" /></label>
+          <label>Hindi Meaning<input id="fHindiMeaning" type="text" /></label>
+          <label>Category<input id="fCategory" type="text" /></label>
+          <label>Difficulty
+            <select id="fDifficulty">
+              <option value="easy">Easy</option>
+              <option value="medium" selected>Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </label>
+        </div>
+        <div id="formError" class="error-text hidden"></div>
+        <div class="modal-actions">
+          <button type="button" id="wordFormCancelBtn" class="btn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit mode toolbar -->
+  <div id="editToolbar" class="edit-toolbar hidden">
+    <span>🔓 Edit mode active</span>
+    <span id="unsavedIndicator" class="unsaved-indicator hidden">● unsaved changes</span>
+    <button id="addWordBtn" class="btn btn-primary">+ Add Word</button>
+    <button id="exportBtn" class="btn">⬇ Export words.json</button>
+    <button id="exitEditModeBtn" class="btn">Exit Edit Mode</button>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

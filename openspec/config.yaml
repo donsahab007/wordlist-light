@@ -1,0 +1,49 @@
+schema: spec-driven
+
+# Project context (optional)
+# This is shown to AI when creating artifacts.
+# Add your tech stack, conventions, style guides, domain knowledge, etc.
+# Example:
+#   context: |
+#     Tech stack: TypeScript, React, Node.js
+#     We use conventional commits
+#     Domain: e-commerce platform
+context: |
+  Project: WordList Lite - a lightweight English vocabulary SPA, ~1600 words migrated
+  from the sibling "WordList_2" project (D:\Learn\Code\Voyager\WordList_2).
+  Goal: zero-backend, static-hostable (e.g. GitHub Pages) single-page app.
+  Tech stack: vanilla HTML/CSS/JS only. No build step, no framework, no backend,
+  no database. Data lives in a single bundled words.json file.
+  Word fields: word, meaning, partOfSpeech, example, synonyms, antonyms,
+  hindiMeaning, difficulty (easy/medium/hard), category.
+  Core features: search (by word/meaning/hindi), A-Z alphabet filter, optional
+  flashcard view.
+  Edit model: a single hardcoded/client-side password gates an "edit mode" that
+  lets the user add/edit words in the browser, then export an updated words.json
+  file for the user to manually replace in the repo and redeploy. This is a UI
+  speed-bump only, NOT real security - single admin, no password recovery, no
+  server-side enforcement. Must be documented clearly as such.
+  Non-goals: no user accounts, no multi-user auth, no server API, no database,
+  no build tooling, no progress/stats tracking.
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always include a "Non-goals" section
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
+
+# Per-operation guidance (optional)
+# Add advisory guidance for how apply and archive work should be conducted.
+# This is separate from artifact rules above.
+# Example:
+#   operations:
+#     apply:
+#       guidance:
+#         - Keep test summaries concise
+#     archive:
+#       guidance:
+#         - Summarize the archive outcome before finishing
