@@ -45,7 +45,8 @@ No build step is required — `index.html`, `styles.css`, `app.js`, and
 ## Editing words
 
 1. Click **🔐 Edit** in the header.
-2. Enter the edit-mode password. Default password: `wordlist2024`.
+2. Enter the edit-mode password (set by whoever deployed this site — see
+   "Changing the password" below if you need to update or don't know it).
 3. Use **+ Add Word** or the **✏️ Edit** button on any word to change its
    fields. Duplicate words (case-insensitive) are rejected.
 4. Click **⬇ Export words.json** to download the updated dataset.
@@ -54,15 +55,15 @@ No build step is required — `index.html`, `styles.css`, `app.js`, and
 
 ### ⚠️ Important: this is not real security
 
-The edit-mode password check runs entirely in your browser. Anyone with
-basic familiarity with browser devtools can bypass it or read the password
-hash out of `app.js`. There is:
+The edit-mode password check runs entirely in your browser using PBKDF2
+(SHA-256, 150,000 iterations, random salt) instead of a single fast hash —
+this slows down offline brute-forcing, but the salt and resulting hash are
+still visible in `app.js` to anyone who views page source. There is:
 
 - No server enforcing the password.
 - No account system or per-user permissions.
-- **No password recovery.** If you forget the password, you must edit the
-  `DEFAULT_PASSWORD_SHA256` constant in `app.js` (with a new SHA-256 hash
-  of your new password) and redeploy.
+- **No password recovery.** If you forget the password, you must generate
+  a new salt/hash pair (see below) and redeploy.
 
 This is intended purely as a convenience gate to prevent accidental edits
 by a casual visitor — not to protect sensitive data. Don't rely on it for
@@ -71,17 +72,29 @@ editing.
 
 ### Changing the password
 
-Open a browser devtools console anywhere and run:
+Run this with Node.js (it uses the same Web Crypto API available in
+browsers):
 
-```js
-crypto.subtle.digest("SHA-256", new TextEncoder().encode("yourNewPassword"))
-  .then(buf => console.log(
-    Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("")
-  ));
+```bash
+node -e "
+const crypto = require('crypto').webcrypto;
+(async () => {
+  const password = 'yourNewPassword';
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const enc = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveBits']);
+  const iterations = 150000;
+  const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt, iterations, hash: 'SHA-256' }, keyMaterial, 256);
+  const hex = (buf) => Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  console.log('SALT_HEX =', hex(salt));
+  console.log('ITERATIONS =', iterations);
+  console.log('HASH_HEX =', hex(bits));
+})();
+"
 ```
 
-Copy the printed hex string into `DEFAULT_PASSWORD_SHA256` in `app.js`,
-then commit, push, and redeploy.
+Copy the three printed values into `PASSWORD_SALT_HEX`, `PASSWORD_ITERATIONS`,
+and `PASSWORD_HASH_HEX` in `app.js`, then commit, push, and redeploy.
 
 ## Data model
 

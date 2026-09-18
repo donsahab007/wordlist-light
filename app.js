@@ -6,14 +6,36 @@
   "use strict";
 
   // ---- Configuration ------------------------------------------------
-  // SHA-256 hex digest of the edit-mode password. Default password is
-  // "wordlist2024". To change it: open a browser console and run
-  //   crypto.subtle.digest("SHA-256", new TextEncoder().encode("yourNewPassword"))
-  //     .then(b => console.log(Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("")))
-  // then replace the value below and redeploy. There is NO recovery if
-  // forgotten — you must edit this file and redeploy.
-  const DEFAULT_PASSWORD_SHA256 =
-    "f6b10be9bc4607b6eeed66123a12de4d1b913ec6fe9b263778344ba330d14fa6";
+  // Edit-mode password check uses PBKDF2 (SHA-256, 150,000 iterations) with
+  // a random salt, instead of a single fast hash — this makes offline
+  // brute-forcing meaningfully slower even though the salt/hash are visible
+  // in this file. It is still a client-side convenience gate, NOT real
+  // security (see README). There is NO recovery if the password is
+  // forgotten — you must regenerate these values and redeploy.
+  //
+  // To change the password, run this in Node (or adapt for a browser
+  // console using the same crypto.subtle APIs) and replace the three
+  // constants below with the printed values:
+  //
+  //   node -e "
+  //   const crypto = require('crypto').webcrypto;
+  //   (async () => {
+  //     const password = 'yourNewPassword';
+  //     const salt = crypto.getRandomValues(new Uint8Array(16));
+  //     const enc = new TextEncoder();
+  //     const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveBits']);
+  //     const iterations = 150000;
+  //     const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt, iterations, hash: 'SHA-256' }, keyMaterial, 256);
+  //     const hex = (buf) => Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  //     console.log('SALT_HEX =', hex(salt));
+  //     console.log('ITERATIONS =', iterations);
+  //     console.log('HASH_HEX =', hex(bits));
+  //   })();
+  //   "
+  const PASSWORD_SALT_HEX = "41ffabddd4f63cc264bd2de0f4c3f9e0";
+  const PASSWORD_ITERATIONS = 150000;
+  const PASSWORD_HASH_HEX =
+    "b6c68f32012e4817b415570685a843ac4281e81f376b0b315504836f81d4c150";
 
   // ---- State ----------------------------------------------------------
   let words = [];
@@ -83,10 +105,34 @@
     }[c]));
   }
 
-  async function sha256Hex(text) {
-    const enc = new TextEncoder().encode(text);
-    const buf = await crypto.subtle.digest("SHA-256", enc);
-    return Array.from(new Uint8Array(buf))
+  function hexToBytes(hex) {
+    const bytes = new Uint8Array(hex.length / 2);
+    for (let i = 0; i < bytes.length; i++) {
+      bytes[i] = parseInt(hex.substr(i * 2, 2), 16);
+    }
+    return bytes;
+  }
+
+  async function derivePasswordHash(password) {
+    const enc = new TextEncoder();
+    const keyMaterial = await crypto.subtle.importKey(
+      "raw",
+      enc.encode(password),
+      "PBKDF2",
+      false,
+      ["deriveBits"]
+    );
+    const bits = await crypto.subtle.deriveBits(
+      {
+        name: "PBKDF2",
+        salt: hexToBytes(PASSWORD_SALT_HEX),
+        iterations: PASSWORD_ITERATIONS,
+        hash: "SHA-256",
+      },
+      keyMaterial,
+      256
+    );
+    return Array.from(new Uint8Array(bits))
       .map((b) => b.toString(16).padStart(2, "0"))
       .join("");
   }
@@ -265,8 +311,8 @@
   }
 
   async function submitPassword() {
-    const hash = await sha256Hex(els.passwordInput.value);
-    if (hash === DEFAULT_PASSWORD_SHA256) {
+    const hash = await derivePasswordHash(els.passwordInput.value);
+    if (hash === PASSWORD_HASH_HEX) {
       editMode = true;
       unsavedChanges = false;
       els.editToolbar.classList.remove("hidden");
