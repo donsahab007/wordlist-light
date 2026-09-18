@@ -65,4 +65,4 @@
       edit+export against the full migrated dataset
 - [x] 6.2 Verify the site loads and functions correctly when served purely
       as static files (no dev server features relied upon)
-- [ ] 6.3 Deploy to GitHub Pages and verify the live URL works end-to-end
+- [x] 6.3 Deploy to GitHub Pages and verify the live URL works end-to-end
