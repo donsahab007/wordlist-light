@@ -37,6 +37,15 @@
   const PASSWORD_HASH_HEX =
     "b6c68f32012e4817b415570685a843ac4281e81f376b0b315504836f81d4c150";
 
+  // GitHub repository this site is published from. Used by the "Publish to
+  // GitHub" feature to commit an updated words.json directly via the GitHub
+  // Contents API. Update these if you fork/rename the repository.
+  const GITHUB_OWNER = "donsahab007";
+  const GITHUB_REPO = "wordlist-light";
+  const GITHUB_BRANCH = "main";
+  const GITHUB_FILE_PATH = "words.json";
+  const GITHUB_COMMIT_MESSAGE = "Update words.json via edit mode";
+
   // ---- State ----------------------------------------------------------
   let words = [];
   let searchTerm = "";
@@ -48,6 +57,11 @@
   let editMode = false;
   let unsavedChanges = false;
   let editingOriginalWord = null; // set when editing an existing word
+
+  // GitHub PAT kept in memory only for the lifetime of this tab/session —
+  // never written to localStorage, sessionStorage, or cookies. Lost on
+  // reload or tab close, requiring re-entry to publish again.
+  let githubToken = null;
 
   // ---- DOM refs ---------------------------------------------------------
   const els = {
@@ -77,6 +91,16 @@
     addWordBtn: document.getElementById("addWordBtn"),
     exportBtn: document.getElementById("exportBtn"),
     exitEditModeBtn: document.getElementById("exitEditModeBtn"),
+    publishBtn: document.getElementById("publishBtn"),
+    tokenModal: document.getElementById("tokenModal"),
+    tokenInput: document.getElementById("tokenInput"),
+    tokenError: document.getElementById("tokenError"),
+    tokenCancelBtn: document.getElementById("tokenCancelBtn"),
+    tokenSubmitBtn: document.getElementById("tokenSubmitBtn"),
+    publishStatusModal: document.getElementById("publishStatusModal"),
+    publishStatusTitle: document.getElementById("publishStatusTitle"),
+    publishStatusBody: document.getElementById("publishStatusBody"),
+    publishStatusCloseBtn: document.getElementById("publishStatusCloseBtn"),
     wordFormModal: document.getElementById("wordFormModal"),
     wordFormTitle: document.getElementById("wordFormTitle"),
     wordForm: document.getElementById("wordForm"),
@@ -439,6 +463,147 @@
     els.unsavedIndicator.classList.add("hidden");
   }
 
+  // ---- Publish to GitHub ---------------------------------------------------
+  // Uses the GitHub Contents API to commit the current in-memory dataset
+  // directly to GITHUB_BRANCH. Requires a PAT with write access to the
+  // repo, kept only in memory (see `githubToken`). Not real "sync" —
+  // Publish is an explicit, one-shot action the user must trigger; nothing
+  // here runs automatically or in the background.
+
+  function utf8ToBase64(str) {
+    // btoa() only handles Latin1, so encode to UTF-8 bytes first to safely
+    // support non-ASCII content like Hindi meanings.
+    const bytes = new TextEncoder().encode(str);
+    let binary = "";
+    bytes.forEach((b) => {
+      binary += String.fromCharCode(b);
+    });
+    return btoa(binary);
+  }
+
+  function openTokenModal() {
+    els.tokenInput.value = "";
+    els.tokenError.classList.add("hidden");
+    els.tokenModal.classList.remove("hidden");
+    els.tokenInput.focus();
+  }
+
+  function closeTokenModal() {
+    els.tokenModal.classList.add("hidden");
+  }
+
+  function showPublishStatus(title, bodyHtml) {
+    els.publishStatusTitle.textContent = title;
+    els.publishStatusBody.innerHTML = bodyHtml;
+    els.publishStatusModal.classList.remove("hidden");
+  }
+
+  async function githubApiRequest(url, options) {
+    const res = await fetch(url, {
+      ...options,
+      headers: {
+        Authorization: `Bearer ${githubToken}`,
+        Accept: "application/vnd.github+json",
+        "Content-Type": "application/json",
+        ...(options && options.headers),
+      },
+    });
+    return res;
+  }
+
+  async function fetchCurrentFileSha() {
+    const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}?ref=${GITHUB_BRANCH}`;
+    const res = await githubApiRequest(url, { method: "GET" });
+    if (res.status === 401 || res.status === 403) {
+      throw new PublishError(
+        "auth",
+        "GitHub rejected the token (invalid or missing permission to read this repository)."
+      );
+    }
+    if (!res.ok) {
+      throw new PublishError(
+        "network",
+        `Could not read current file from GitHub (HTTP ${res.status}).`
+      );
+    }
+    const data = await res.json();
+    return data.sha;
+  }
+
+  class PublishError extends Error {
+    constructor(kind, message) {
+      super(message);
+      this.kind = kind; // "auth" | "conflict" | "network"
+    }
+  }
+
+  async function publishToGitHub() {
+    if (!githubToken) {
+      openTokenModal();
+      return;
+    }
+    await doPublish();
+  }
+
+  async function doPublish() {
+    showPublishStatus("Publishing…", "<p>Contacting GitHub, please wait…</p>");
+    try {
+      const sha = await fetchCurrentFileSha();
+      const content = utf8ToBase64(JSON.stringify(words, null, 2));
+      const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}`;
+      const res = await githubApiRequest(url, {
+        method: "PUT",
+        body: JSON.stringify({
+          message: GITHUB_COMMIT_MESSAGE,
+          content,
+          sha,
+          branch: GITHUB_BRANCH,
+        }),
+      });
+
+      if (res.status === 401 || res.status === 403) {
+        throw new PublishError(
+          "auth",
+          "GitHub rejected the token (invalid, expired, or missing write permission on this repository)."
+        );
+      }
+      if (res.status === 409) {
+        throw new PublishError(
+          "conflict",
+          "The file on GitHub has changed since this page was loaded. Reload the page to get the latest version before publishing again, to avoid overwriting someone else's change."
+        );
+      }
+      if (!res.ok) {
+        const body = await res.text().catch(() => "");
+        throw new PublishError(
+          "network",
+          `GitHub rejected the publish (HTTP ${res.status}). ${escapeHtml(body).slice(0, 200)}`
+        );
+      }
+
+      unsavedChanges = false;
+      els.unsavedIndicator.classList.add("hidden");
+      showPublishStatus(
+        "✅ Published",
+        "<p>Your changes were committed to GitHub. The site will redeploy automatically in a minute or two.</p>"
+      );
+    } catch (err) {
+      // In-memory edits are untouched regardless of failure kind - only the
+      // publish attempt failed, nothing local was lost.
+      if (err instanceof PublishError && err.kind === "auth") {
+        githubToken = null; // force re-entry next time since it's known-bad
+      }
+      const kindLabel =
+        err instanceof PublishError && err.kind === "conflict"
+          ? "⚠️ Publish Conflict"
+          : "❌ Publish Failed";
+      showPublishStatus(
+        kindLabel,
+        `<p>${escapeHtml(err.message)}</p><p>Your in-browser edits are still here — nothing was lost. You can retry, or use "⬇ Export words.json" as a fallback.</p>`
+      );
+    }
+  }
+
   // ---- Event wiring --------------------------------------------------------
   els.viewToggleBtn.addEventListener("click", () =>
     setView(currentView === "list" ? "flashcard" : "list")
@@ -490,6 +655,26 @@
   els.exportBtn.addEventListener("click", exportWords);
   els.wordFormCancelBtn.addEventListener("click", closeWordForm);
   els.wordForm.addEventListener("submit", handleWordFormSubmit);
+
+  els.publishBtn.addEventListener("click", publishToGitHub);
+  els.tokenCancelBtn.addEventListener("click", closeTokenModal);
+  els.tokenSubmitBtn.addEventListener("click", () => {
+    const value = els.tokenInput.value.trim();
+    if (!value) {
+      els.tokenError.textContent = "Please enter a token.";
+      els.tokenError.classList.remove("hidden");
+      return;
+    }
+    githubToken = value;
+    closeTokenModal();
+    doPublish();
+  });
+  els.tokenInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") els.tokenSubmitBtn.click();
+  });
+  els.publishStatusCloseBtn.addEventListener("click", () => {
+    els.publishStatusModal.classList.add("hidden");
+  });
 
   window.addEventListener("beforeunload", (e) => {
     if (unsavedChanges) {

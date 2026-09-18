@@ -49,9 +49,49 @@ No build step is required — `index.html`, `styles.css`, `app.js`, and
    "Changing the password" below if you need to update or don't know it).
 3. Use **+ Add Word** or the **✏️ Edit** button on any word to change its
    fields. Duplicate words (case-insensitive) are rejected.
-4. Click **⬇ Export words.json** to download the updated dataset.
-5. Replace `words.json` in this repository with the downloaded file and
-   commit/push. GitHub Pages will redeploy automatically.
+4. Save your changes one of two ways:
+   - **🚀 Publish to GitHub** (recommended): commits the updated
+     `words.json` straight to this repo. The site redeploys automatically
+     within a minute or two. See "Publishing directly to GitHub" below —
+     you'll need a Personal Access Token the first time you use it each
+     session.
+   - **⬇ Export words.json** (fallback, always available): downloads the
+     updated dataset. Replace `words.json` in this repository with the
+     downloaded file and commit/push yourself. Use this if you don't want
+     to create a token, or if Publish fails for any reason.
+
+### Publishing directly to GitHub
+
+Clicking **🚀 Publish to GitHub** commits the current word list straight to
+the `main` branch via the GitHub Contents API — no local git commands
+needed.
+
+The first time you publish in a browser tab, you'll be prompted for a
+**Personal Access Token (PAT)** with write access to this repository:
+
+1. On GitHub, go to **Settings → Developer settings → Personal access
+   tokens → Fine-grained tokens → Generate new token**.
+2. Set **Repository access** to "Only select repositories" and pick this
+   repo.
+3. Under **Permissions**, grant **Contents: Read and write** only.
+4. Set a **short expiration** (e.g. 7 days) — you can always generate a
+   new one later.
+5. Paste the token into the prompt when publishing.
+
+**Token handling:**
+
+- The token is kept **only in memory** for the current browser tab — it is
+  never saved to localStorage, cookies, or anywhere on disk. Reloading the
+  page or closing the tab forgets it; you'll be asked again next time.
+- Treat this token as **more sensitive than the edit-mode password** — it
+  grants real write access to this GitHub repository. Only paste it into
+  the token prompt on this site, and let it expire or revoke it when
+  you're done.
+- If GitHub reports the file changed since you loaded the page (a publish
+  conflict), reload the page to get the latest data before trying again,
+  so you don't overwrite someone else's edit.
+- If publishing fails for any reason, your in-browser edits are **not
+  lost** — you can retry, or fall back to **⬇ Export words.json**.
 
 ### ⚠️ Important: this is not real security
 

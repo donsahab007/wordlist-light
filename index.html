@@ -113,7 +113,39 @@
     <span id="unsavedIndicator" class="unsaved-indicator hidden">● unsaved changes</span>
     <button id="addWordBtn" class="btn btn-primary">+ Add Word</button>
     <button id="exportBtn" class="btn">⬇ Export words.json</button>
+    <button id="publishBtn" class="btn btn-primary">🚀 Publish to GitHub</button>
     <button id="exitEditModeBtn" class="btn">Exit Edit Mode</button>
+  </div>
+
+  <!-- GitHub token prompt modal -->
+  <div id="tokenModal" class="modal hidden">
+    <div class="modal-content">
+      <h2>GitHub Personal Access Token</h2>
+      <p class="warning-text">
+        ⚠️ This token grants write access to your GitHub repository. It is
+        kept only in this browser tab's memory for this session — never
+        saved to localStorage, cookies, or disk. Use a fine-grained token
+        scoped only to this repository with "Contents: Read and write"
+        permission and a short expiration. See README for setup steps.
+      </p>
+      <input id="tokenInput" type="password" placeholder="github_pat_..." autocomplete="off" />
+      <div id="tokenError" class="error-text hidden"></div>
+      <div class="modal-actions">
+        <button id="tokenCancelBtn" class="btn">Cancel</button>
+        <button id="tokenSubmitBtn" class="btn btn-primary">Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Publish status modal -->
+  <div id="publishStatusModal" class="modal hidden">
+    <div class="modal-content">
+      <h2 id="publishStatusTitle">Publishing...</h2>
+      <div id="publishStatusBody"></div>
+      <div class="modal-actions">
+        <button id="publishStatusCloseBtn" class="btn btn-primary">Close</button>
+      </div>
+    </div>
   </div>
 
   <script src="app.js"></script>
