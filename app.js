@@ -65,6 +65,9 @@
 
   // ---- DOM refs ---------------------------------------------------------
   const els = {
+    aboutBtn: document.getElementById("aboutBtn"),
+    aboutModal: document.getElementById("aboutModal"),
+    aboutCloseBtn: document.getElementById("aboutCloseBtn"),
     viewToggleBtn: document.getElementById("viewToggleBtn"),
     editModeBtn: document.getElementById("editModeBtn"),
     searchInput: document.getElementById("searchInput"),
@@ -674,6 +677,13 @@
   });
   els.publishStatusCloseBtn.addEventListener("click", () => {
     els.publishStatusModal.classList.add("hidden");
+  });
+
+  els.aboutBtn.addEventListener("click", () => {
+    els.aboutModal.classList.remove("hidden");
+  });
+  els.aboutCloseBtn.addEventListener("click", () => {
+    els.aboutModal.classList.add("hidden");
   });
 
   window.addEventListener("beforeunload", (e) => {

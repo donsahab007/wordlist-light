@@ -10,6 +10,7 @@
   <header class="app-header">
     <h1>📚 WordList Lite</h1>
     <div class="header-actions">
+      <button id="aboutBtn" class="btn">ℹ️ About</button>
       <button id="viewToggleBtn" class="btn">🔀 Flashcards</button>
       <button id="editModeBtn" class="btn">🔐 Edit</button>
     </div>
@@ -144,6 +145,24 @@
       <div id="publishStatusBody"></div>
       <div class="modal-actions">
         <button id="publishStatusCloseBtn" class="btn btn-primary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- About / credits modal -->
+  <div id="aboutModal" class="modal hidden">
+    <div class="modal-content">
+      <h2>📚 About WordList Lite</h2>
+      <p>Built with pride by a father-son team:</p>
+      <ul class="credits-list">
+        <li>👨‍💻 Roopesh</li>
+        <li>
+          <span class="credit-kid">🌟 Bhavya Suryavanshi 🚀</span>
+          <span class="credit-kid-label">— Junior Developer</span>
+        </li>
+      </ul>
+      <div class="modal-actions">
+        <button id="aboutCloseBtn" class="btn btn-primary">Close</button>
       </div>
     </div>
   </div>
