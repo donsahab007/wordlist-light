@@ -44,16 +44,16 @@
 
 ## 5. Verification
 
-- [ ] 5.1 Manually verify: enter edit mode, add/edit a word, publish with a
+- [x] 5.1 Manually verify: enter edit mode, add/edit a word, publish with a
       valid fine-grained PAT, confirm a new commit appears on `main` and
       the GitHub Actions deploy runs automatically
-- [ ] 5.2 Manually verify: publish with an invalid/expired token produces a
+- [x] 5.2 Manually verify: publish with an invalid/expired token produces a
       clear error and does not lose in-browser edits
-- [ ] 5.3 Manually verify: simulate a remote change (edit `words.json`
+- [x] 5.3 Manually verify: simulate a remote change (edit `words.json`
       directly on GitHub) then attempt to publish from a stale local
       session and confirm the conflict is surfaced, not silently
       overwritten
-- [ ] 5.4 Manually verify: reload the page after publishing and confirm the
+- [x] 5.4 Manually verify: reload the page after publishing and confirm the
       token must be re-entered (i.e. it was not persisted)
-- [ ] 5.5 Manually verify the existing manual "Export" flow still works
+- [x] 5.5 Manually verify the existing manual "Export" flow still works
       unchanged
