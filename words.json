@@ -15194,12 +15194,12 @@
     "word": "Surreptitious",
     "meaning": "kept secret, especially because it would not be approved of",
     "partOfSpeech": "Adjective",
-    "example": "",
+    "example": "Gandhi writes that during a reception hosted by Prime Minister Atal Bihari Vajpayee, Clinton—despite the Lewinsky scandal having quieted down—was observed \"surreptitiously sizing up the more striking women present",
     "synonyms": "secret,stealthy",
     "antonyms": "open,obvious",
     "hindiMeaning": "गुप्त",
-    "difficulty": "hard",
-    "category": "Abstract"
+    "category": "Abstract",
+    "difficulty": "hard"
   },
   {
     "word": "Surveillance",
@@ -17279,5 +17279,49 @@
     "hindiMeaning": "दो युग्मकों के मिलन से बनी कोशिका",
     "difficulty": "hard",
     "category": "Science"
+  },
+  {
+    "word": "Vile",
+    "meaning": "Extremely unpleasant or disgusting",
+    "partOfSpeech": "Adjective",
+    "example": "Manchester United's 19 yr old winger Anthony was targeted with vile racist abuse after missing a penalty",
+    "synonyms": "Disgusting, Horrible, Nasty, Wicked",
+    "antonyms": "Pleasant, Good, Decent, Admirable",
+    "hindiMeaning": "घृणित, घिनौना , नीच",
+    "category": "character",
+    "difficulty": "medium"
+  },
+  {
+    "word": "Serenity",
+    "meaning": "A state of being calm, peaceful, and untroubled, especially mentally or emotionally.",
+    "partOfSpeech": "noun",
+    "example": "She felt a sense of serenity while sitting beside the lake.",
+    "synonyms": "tranquility, calmness, peacefulness, composure, peace",
+    "antonyms": "anxiety, agitation, stress, turmoil, restlessness",
+    "hindiMeaning": "शांति , मन की शांति",
+    "category": "feeling",
+    "difficulty": "medium"
+  },
+  {
+    "word": "Precarity",
+    "meaning": "A state of uncertainty, insecurity, or instability, especially regarding employment, finances, housing, or living conditions.",
+    "partOfSpeech": "",
+    "example": "Job precarity can cause significant stress and anxiety.",
+    "synonyms": "Insecurity, Instability, Uncertainty",
+    "antonyms": "Security, Stability, Certainty",
+    "hindiMeaning": "असुरक्षा, अनिश्चितता, अस्थिरता",
+    "category": "",
+    "difficulty": "medium"
+  },
+  {
+    "word": "Quockerwodger",
+    "meaning": "A person who acts under the control or influence of someone else, especially a politician who is manipulated by another person or group.",
+    "partOfSpeech": "noun",
+    "example": "The opposition accused him of being a quockerwodger controlled by party leaders",
+    "synonyms": "Puppet, Figurehead, Mouthpiece, Stooge",
+    "antonyms": "Independent thinker, Autonomous leader",
+    "hindiMeaning": "कठपुतली",
+    "category": "politics",
+    "difficulty": "medium"
   }
 ]
