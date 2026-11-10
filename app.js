@@ -32,10 +32,10 @@
   //     console.log('HASH_HEX =', hex(bits));
   //   })();
   //   "
-  const PASSWORD_SALT_HEX = "41ffabddd4f63cc264bd2de0f4c3f9e0";
+  const PASSWORD_SALT_HEX = "c3bf4d371ba08b31e63d0f80b65648ab";
   const PASSWORD_ITERATIONS = 150000;
   const PASSWORD_HASH_HEX =
-    "b6c68f32012e4817b415570685a843ac4281e81f376b0b315504836f81d4c150";
+    "04df1073f7e12426c2f7f023f6fb3eb99dc23f079878cb270101e6bba3033e2a";
 
   // GitHub repository this site is published from. Used by the "Publish to
   // GitHub" feature to commit an updated words.json directly via the GitHub
