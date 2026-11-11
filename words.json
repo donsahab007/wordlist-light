@@ -17323,5 +17323,16 @@
     "hindiMeaning": "कठपुतली",
     "category": "politics",
     "difficulty": "medium"
+  },
+  {
+    "word": "Confectionery",
+    "meaning": "Sweets, chocolates, candies, and other sweet foods. It can also refer to the business of making or selling them.",
+    "partOfSpeech": "Noun",
+    "example": "We received several boxes of confectionery as Diwali gifts.",
+    "synonyms": "Sweets, Candies, Sweetmeats",
+    "antonyms": "",
+    "hindiMeaning": "मिठाई, चॉकलेट, कैंडी आदि मीठी खाने की चीज़ें",
+    "category": "",
+    "difficulty": "medium"
   }
 ]
