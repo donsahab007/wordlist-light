@@ -45,6 +45,14 @@
   const GITHUB_BRANCH = "main";
   const GITHUB_FILE_PATH = "words.json";
   const GITHUB_COMMIT_MESSAGE = "Update words.json via edit mode";
+  const PARTS_OF_SPEECH = [
+    "Noun", "Pronoun", "Verb", "Adjective", "Adverb",
+    "Preposition", "Conjunction", "Interjection", "Determiner",
+  ];
+  const CATEGORIES = [
+    "Academic", "Legal", "Abstract", "Science", "Emotion", "Politics",
+    "Literature", "Business", "Social", "Nature", "Character", "Feeling",
+  ];
 
   // ---- State ----------------------------------------------------------
   let words = [];
@@ -370,8 +378,24 @@
   }
 
   // ---- Add / edit word form -----------------------------------------------
+  function populateMetadataOptions(select, field, predefined) {
+    const values = new Set(predefined);
+    words.forEach((word) => {
+      if (word[field]) values.add(word[field]);
+    });
+    select.length = 1;
+    Array.from(values).sort().forEach((value) => {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = value;
+      select.appendChild(option);
+    });
+  }
+
   function openWordForm(word) {
     els.formError.classList.add("hidden");
+    populateMetadataOptions(els.fPartOfSpeech, "partOfSpeech", PARTS_OF_SPEECH);
+    populateMetadataOptions(els.fCategory, "category", CATEGORIES);
     if (word) {
       editingOriginalWord = word.word;
       els.wordFormTitle.textContent = "Edit Word";

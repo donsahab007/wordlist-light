@@ -79,13 +79,21 @@
         <input type="hidden" id="originalWord" />
         <div class="form-grid">
           <label>Word*<input id="fWord" type="text" required /></label>
-          <label>Part of Speech<input id="fPartOfSpeech" type="text" /></label>
+          <label>Part of Speech
+            <select id="fPartOfSpeech">
+              <option value="">Select part of speech</option>
+            </select>
+          </label>
           <label class="span-2">Meaning*<input id="fMeaning" type="text" required /></label>
           <label class="span-2">Example<input id="fExample" type="text" /></label>
           <label>Synonyms (comma-separated)<input id="fSynonyms" type="text" /></label>
           <label>Antonyms (comma-separated)<input id="fAntonyms" type="text" /></label>
           <label>Hindi Meaning<input id="fHindiMeaning" type="text" /></label>
-          <label>Category<input id="fCategory" type="text" /></label>
+          <label>Category
+            <select id="fCategory">
+              <option value="">Select category</option>
+            </select>
+          </label>
           <label>Difficulty
             <select id="fDifficulty">
               <option value="easy">Easy</option>
